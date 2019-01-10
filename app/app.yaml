@@ -1,1 +1,6 @@
 runtime: python37
+
+handlers:
+- url: /bootstrap
+  script: auto
+  login: admin
