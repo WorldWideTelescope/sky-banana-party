@@ -21,35 +21,38 @@ def bootstrap():
 
     """
 
-    client = datastore.Client()
-    n = 0
+    try:
+        client = datastore.Client()
+        n = 0
 
-    with open('filelist.json') as f:
-        fldata = json.load(f)
+        with open('filelist.json') as f:
+            fldata = json.load(f)
 
-    for filename in os.listdir():
-        if not filename.endswith('.json') or not filename.startswith('GW'):
-            continue
+        for filename in os.listdir():
+            if not filename.endswith('.json') or not filename.startswith('GW'):
+                continue
 
-        with open(filename) as f:
-            text = f.read()
+            with open(filename) as f:
+                text = f.read()
 
-        ident = filename.split('_')[0]
-        flitem = flist['data'][ident]
+            ident = filename.split('_')[0]
+            flitem = fldata['data'][ident]
 
-        peak_gps = flitem['files']['PeakAmpGPS']
+            peak_gps = flitem['files']['PeakAmpGPS']
 
-        key = client.key('event', ident)
-        ent = datastore.Entity(key=key)
-        ent.update({
-            'ident': ident,
-            'geojson': text,
-            'peak_gps': peak_gps,
-        })
-        client.put(ent)
-        n += 1
+            key = client.key('event', ident)
+            ent = datastore.Entity(key=key, exclude_from_indexes=('geojson',))
+            ent.update({
+                'ident': ident,
+                'geojson': text.encode('utf8'), # these are too big to fit as "text" type
+                'peak_gps': peak_gps,
+            })
+            client.put(ent)
+            n += 1
 
-    return '%d items added' % n
+        return '%d items added' % n
+    except Exception as e:
+        return 'ERROR: %s' % e
 
 
 if __name__ == '__main__':
