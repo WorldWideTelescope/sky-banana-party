@@ -1,0 +1,5 @@
+indexes:
+- kind: event
+  properties:
+  - name: ident
+  - name: peak_gps

@@ -20,7 +20,6 @@ def bootstrap():
     this file in order for them to land on the servers.
 
     """
-
     try:
         client = datastore.Client()
         n = 0
@@ -53,6 +52,29 @@ def bootstrap():
         return '%d items added' % n
     except Exception as e:
         return 'ERROR: %s' % e
+
+
+@app.route('/api/workingset')
+def working_set():
+    """Get a JSON blob with info about recent events that we might want to plot.
+
+    """
+    client = datastore.Client()
+    q = client.query(kind='event', projection=('ident', 'peak_gps'))
+    # TODO: filter by recency!
+    results = dict((r['ident'], r) for r in q.fetch())
+    return json.dumps(results)
+
+
+@app.route('/api/<string:ident>/contourdata')
+def contour_data(ident):
+    """Get a GeoJSON blob with the contour data for the event.
+
+    """
+    client = datastore.Client()
+    key = client.key('event', ident)
+    ent = client.get(key)
+    return ent['geojson']
 
 
 if __name__ == '__main__':
