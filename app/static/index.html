@@ -85,10 +85,17 @@
 
           wwt_ready = 1;
 
-          var url = new URL("api/workingset", window.location.href).href;
-          $.getJSON(url, function(data) {
-              for (const [key, vaue] of Object.entries(data)) {
-                  console.log("key: " + key);
+          const  wsurl = new URL("api/workingset", window.location.href).href;
+          $.getJSON(wsurl, function(data) {
+              for (const [key, value] of Object.entries(data)) {
+                  const peak_gps = value.peak_gps;
+
+                  const gjurl = new URL("api/" + key + "/contourdata", window.location.href).href;
+                  $.getJSON(gjurl, function(geojson) {
+                      for (const feature of geojson.features[0].geometry.coordinates) {
+                          console.log(feature);
+                      }
+                  });
               }
           });
       }
