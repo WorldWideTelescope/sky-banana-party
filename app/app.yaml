@@ -1,5 +1,8 @@
 runtime: python37
 
+# TESTING ONLY: keep static files fresh
+default_expiration: "30s"
+
 handlers:
 - url: /bootstrap
   script: auto
