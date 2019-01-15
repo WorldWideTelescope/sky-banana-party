@@ -9,61 +9,77 @@
     $(document).ready(size_content);
     $(window).resize(size_content);
 
-    var wwt;
-
     function initialize() {
-        wwt = wwtlib.WWTControl.initControlParam("wwtcanvas", true); // "true" => WebGL enabled
-        wwt.add_ready(wwt_ready);
+        // This function call is
+        // wwt-web-client/HTML5SDK/wwtlib/WWTControl.cs:WWTControl::InitControlParam.
+        // It creates a singleton WWTControl object, accessible here as
+        // `wwtlib.WWTControl.singleton`, and returns a singleton
+        // ScriptInterface object, also accessible as
+        // `wwtlib.WWTControl.scriptInterface`.
+        var wwt_si = wwtlib.WWTControl.initControlParam("wwtcanvas", true); // "true" => WebGL enabled
+        wwt_si.add_ready(wwt_ready);
     }
 
     $(document).ready(initialize);
 
     function wwt_ready() {
-        wwt.loadImageCollection('https://WorldWideTelescope.github.io/pywwt/surveys.xml')
-        wwt.setForegroundImageByName('Digitized Sky Survey (Color)')
-        wwt.setBackgroundImageByName('Hydrogen Alpha Full Sky Map')
-        wwt.setForegroundOpacity(80.0)
-        wwt.settings.set_actualPlanetScale(false)
-        wwt.settings.set_showConstellationBoundries(false)
-        wwt.settings.set_showConstellationFigures(false)
-        wwt.settings.set_showConstellationSelection(false)
-        wwt.settings.set_constellationBoundryColor('#0000ff')
-        wwt.settings.set_constellationFigureColor('#ff0000')
-        wwt.settings.set_constellationSelectionColor('#ffff00')
-        wwt.settings.set_showCrosshairs(false)
-        wwt.settings.set_crosshairsColor('#ffffff')
-        wwt.settings.set_showEcliptic(false)
-        wwt.settings.set_showGrid(false)
-        wwt.settings.set_galacticMode(false)
-        wwt.settings.set_showGalacticGrid(false)
-        wwt.settings.set_showEclipticGrid(false)
-        wwt.settings.set_showAltAzGrid(false)
-        wwt.settings.set_localHorizonMode(false)
-        wwt.settings.set_locationAltitude(0.0)
-        wwt.settings.set_locationLat(47.633)
-        wwt.settings.set_locationLng(122.133333)
-        wwt.settings.set_solarSystemLighting(true)
-        wwt.settings.set_solarSystemMilkyWay(true)
-        wwt.settings.set_solarSystemOrbits(true)
-        wwt.settings.set_solarSystemScale('1')
-        wwt.settings.set_solarSystemStars(true)
-        wwt.settings.set_solarSystemMinorOrbits(false)
-        wwt.settings.set_solarSystemPlanets(true)
+        var wwt_ctl = wwtlib.WWTControl.singleton;
+        var wwt_si = wwtlib.WWTControl.scriptInterface;
 
-        //const wsurl = new URL("api/workingset", window.location.href).href;
-        //$.getJSON(wsurl, function(data) {
-        //    for (const [key, value] of Object.entries(data)) {
-        //        const peak_gps = value.peak_gps;
-        //
-        //        const gjurl = new URL("api/" + key + "/contourdata", window.location.href).href;
-        //        $.getJSON(gjurl, function(geojson) {
-        //            for (const feature of geojson.features[0].geometry.coordinates) {
-        //                console.log(feature);
-        //            }
-        //        });
-        //    }
-        //});
+        wwt_si.loadImageCollection('https://WorldWideTelescope.github.io/pywwt/surveys.xml');
+        wwt_si.setBackgroundImageByName('USNOB');
+        wwt_si.settings.set_showConstellationBoundries(false);
+        wwt_si.settings.set_showConstellationFigures(false);
+        wwt_si.settings.set_showConstellationSelection(false);
 
+        setup_bananas(wwt_ctl, wwt_si);
+        setup_controls(wwt_ctl, wwt_si);
+    }
+
+    //wwt.settings.set_actualPlanetScale(false);
+    //wwt.settings.set_showConstellationBoundries(false);
+    //wwt.settings.set_showConstellationFigures(false);
+    //wwt.settings.set_showConstellationSelection(false);
+    //wwt.settings.set_constellationBoundryColor('#0000ff');
+    //wwt.settings.set_constellationFigureColor('#ff0000');
+    //wwt.settings.set_constellationSelectionColor('#ffff00');
+    //wwt.settings.set_showCrosshairs(false);
+    //wwt.settings.set_crosshairsColor('#ffffff');
+    //wwt.settings.set_showEcliptic(false);
+    //wwt.settings.set_showGrid(false);
+    //wwt.settings.set_galacticMode(false);
+    //wwt.settings.set_showGalacticGrid(false);
+    //wwt.settings.set_showEclipticGrid(false);
+    //wwt.settings.set_showAltAzGrid(false);
+    //wwt.settings.set_localHorizonMode(false);
+    //wwt.settings.set_locationAltitude(0.0);
+    //wwt.settings.set_locationLat(47.633);
+    //wwt.settings.set_locationLng(122.133333);
+    //wwt.settings.set_solarSystemLighting(true);
+    //wwt.settings.set_solarSystemMilkyWay(true);
+    //wwt.settings.set_solarSystemOrbits(true);
+    //wwt.settings.set_solarSystemScale('1');
+    //wwt.settings.set_solarSystemStars(true);
+    //wwt.settings.set_solarSystemMinorOrbits(false);
+    //wwt.settings.set_solarSystemPlanets(true);
+
+    function setup_bananas(wwt_ctl, wwt_si) {
+        const wsurl = new URL("api/workingset", window.location.href).href;
+        $.getJSON(wsurl, function(data) {
+            for (const [key, value] of Object.entries(data)) {
+                const peak_gps = value.peak_gps;
+
+                const gjurl = new URL("api/" + key + "/contourdata", window.location.href).href;
+                $.getJSON(gjurl, function(geojson) {
+                    for (const feature of geojson.features[0].geometry.coordinates) {
+                        console.log(feature);
+                    }
+                });
+            }
+        });
+    }
+
+    function setup_controls(wwt_ctl, wwt_si) {
         // TODO: this code is from pywwt and was designed for use in Jupyter;
         // we might be able to do something simpler here.
 
@@ -153,9 +169,9 @@
                 setTimeout(function() { proceed = true }, delay);
 
                 if (event.altKey)
-                    wwtlib.WWTControl.singleton._tilt(event.movementX, event.movementY);
+                    wwt_ctl._tilt(event.movementX, event.movementY);
                 else
-                    wwtlib.WWTControl.singleton.move(event.movementX, event.movementY);
+                    wwt_ctl.move(event.movementX, event.movementY);
             }
         })(true));
 
@@ -172,9 +188,9 @@
                 setTimeout(function() { proceed = true }, delay);
 
                 if (event.deltaY < 0)
-                    wwtlib.WWTControl.singleton.zoom(1.43);
+                    wwt_ctl.zoom(1.43);
                 else
-                    wwtlib.WWTControl.singleton.zoom(0.7);
+                    wwt_ctl.zoom(0.7);
             }
         })(true));
     }
