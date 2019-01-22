@@ -31,6 +31,7 @@
         wwt_si.settings.set_showConstellationBoundries(false);
         wwt_si.settings.set_showConstellationFigures(false);
         wwt_si.settings.set_showConstellationSelection(false);
+        wwt_si.settings.set_showGrid(true);
 
         setup_bananas(wwt_ctl, wwt_si);
         setup_controls(wwt_ctl, wwt_si);
@@ -46,7 +47,6 @@
     //wwt.settings.set_showCrosshairs(false);
     //wwt.settings.set_crosshairsColor('#ffffff');
     //wwt.settings.set_showEcliptic(false);
-    //wwt.settings.set_showGrid(false);
     //wwt.settings.set_galacticMode(false);
     //wwt.settings.set_showGalacticGrid(false);
     //wwt.settings.set_showEclipticGrid(false);
@@ -64,19 +64,65 @@
     //wwt.settings.set_solarSystemPlanets(true);
 
     function setup_bananas(wwt_ctl, wwt_si) {
-        const wsurl = new URL("api/workingset", window.location.href).href;
+        const wsurl = new URL("api/events/workingset", window.location.href).href;
         $.getJSON(wsurl, function(data) {
-            for (const [key, value] of Object.entries(data)) {
-                const peak_gps = value.peak_gps;
+            var index = 0;
 
-                const gjurl = new URL("api/" + key + "/contourdata", window.location.href).href;
-                $.getJSON(gjurl, function(geojson) {
-                    for (const feature of geojson.features[0].geometry.coordinates) {
-                        console.log(feature);
-                    }
-                });
+            for (const event_info of data) {
+                const key = event_info.ident;
+                const regurl = new URL("api/events/" + key + "/regions", window.location.href).href;
+                event_info.index = index;
+                $.getJSON(regurl, function(regions) { setup_one_event(wwt_ctl, wwt_si, event_info, regions) });
+                index++;
             }
         });
+    }
+
+    // from https://sashat.me/2017/01/11/list-of-20-simple-distinct-colors/
+    const palette = [
+        [230, 25, 75],
+        [60, 180, 75],
+        [255, 225, 25],
+        [0, 130, 200],
+        [245, 130, 48],
+        [145, 30, 180],
+        [70, 240, 240],
+        [240, 50, 230],
+        [210, 245, 60],
+        [250, 190, 190],
+        [0, 128, 128],
+        [230, 190, 255],
+        [170, 110, 40],
+        [255, 250, 200],
+        [128, 0, 0],
+        [170, 255, 195],
+        [128, 128, 0],
+        [255, 215, 180]
+    ];
+
+    function setup_one_event(wwt_ctl, wwt_si, event_info, regions) {
+        const peak_gps = event_info.peak_gps;
+        var region_index = 0;
+
+        for (const region of regions) {
+            const id = event_info.ident + "_" + region_index;
+            region_index++;
+
+            const contour = region["contours"]["68"];
+            const c = palette[event_info.index % palette.length];
+
+            var poly = wwt_si.createPolygon(true); // fill=true
+            poly.set_id(id);
+            poly._fillColor$1 = wwtlib.Color.fromArgb(80, c[0], c[1], c[2]); // XXX API only does FromWindowsColorNamed
+            poly._lineColor$1 = wwtlib.Color.fromArgb(0, 0, 0, 0);
+            poly.set_lineWidth(0);
+
+            for (const [x, y] of contour) {
+                poly.addPoint(x, y); // addPoint() takes decimal degrees for both
+            }
+
+            wwt_si.addAnnotation(poly);
+        }
     }
 
     function setup_controls(wwt_ctl, wwt_si) {

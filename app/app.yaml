@@ -4,7 +4,7 @@ runtime: python37
 default_expiration: "30s"
 
 handlers:
-- url: /bootstrap
+- url: /admin/.*
   script: auto
   login: admin
 - url: /api/.*
