@@ -19,4 +19,5 @@ integrated changes to both the frontend and backend.
 
 ## Deployment
 
-Documentation TBD.
+Run `./publish.sh`, which uses the `gsutil` command-line tool.
+
