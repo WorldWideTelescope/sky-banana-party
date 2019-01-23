@@ -1,5 +1,8 @@
 # Sky Banana Party
 
+**See the app at <http://skybanana.party/>!** (Note: it will not work over
+  HTTPS — only plain HTTP for now ☹)
+
 A website that shows recent [LIGO](https://www.ligo.org/) events on the sky.
 It's got a silly name, but the hope is that it will show how to create a
 simple web app that uses
