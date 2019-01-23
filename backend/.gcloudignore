@@ -2,4 +2,6 @@
 .git
 .gitignore
 __pycache__/
+/README.md
+/index.yaml
 /setup.cfg
