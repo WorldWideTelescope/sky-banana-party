@@ -1,7 +1,7 @@
 # Copyright 2019 Peter Williams
 # Licensed under the MIT License
-#
-# The app backend.
+
+"""The app backend."""
 
 from google.cloud import datastore
 import json
@@ -44,8 +44,12 @@ def destroy():
 def bootstrap():
     """Note: the app.yaml enforces that only the app admin can invoke this command.
 
-    You need to copy the bootstrap JSON files into the directory containing
-    this file in order for them to land on the servers.
+    Initialize the event database with historical data. You need to have
+    created `bootstrap_data.json` in this directory by running
+    `../bootstrap/postprocess.py`; see `../bootstrap/README.md`. When you
+    deploy the site with `gcloud app deploy`, that data file will be uploaded
+    to the server. This call ingests the JSON data into the Google Cloud
+    Datastore system.
 
     """
     try:
@@ -101,7 +105,11 @@ def working_set():
 
 @app.route('/api/events/<string:ident>/regions')
 def regions(ident):
-    """Get a GeoJSON blob with the region data for the event.
+    """Get the region data for the specified event.
+
+    The region data are returned as a JSON document whose structure is not
+    documented here. See `../bootstrap/postprocess.py` for how the data are
+    constructed.
 
     """
     client = datastore.Client()
