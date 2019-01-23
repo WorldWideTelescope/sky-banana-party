@@ -155,7 +155,7 @@ def get_events():
 
 
 def main():
-    app_dir = bpath(os.pardir, 'app')
+    backend_dir = bpath(os.pardir, 'backend')
     bootstrap_data = {}
 
     for ident, flitem, geojson in get_events():
@@ -200,7 +200,7 @@ def main():
 
         result['regions'] = regions
 
-    with io.open(os.path.join(app_dir, 'bootstrap_data.json'), 'wt') as f:
+    with io.open(os.path.join(backend_dir, 'bootstrap_data.json'), 'wt') as f:
         json.dump(bootstrap_data, f)
 
 

@@ -1,0 +1,8 @@
+runtime: python37
+
+handlers:
+- url: /admin/.*
+  script: auto
+  login: admin
+- url: /api/.*
+  script: auto

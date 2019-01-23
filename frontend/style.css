@@ -3,6 +3,8 @@ html {
   margin: 0px;
   padding: 0px;
   background-color: #000000;
+  font-size: 1.375em;
+  font-family: 'Roboto', sans-serif;
 }
 
 body {
@@ -16,4 +18,19 @@ body {
   height: 100%;
   border-style: none;
   border-width: 0px;
+}
+
+#maininfo {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  color: #FFF;
+}
+
+p {
+  margin: 0px 0px 0.1rem 0px;
+}
+
+a, a:hover, a:visited {
+  color: #FFF;
 }

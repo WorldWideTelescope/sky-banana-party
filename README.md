@@ -16,16 +16,17 @@ anticipated!
 
 ## Technical Overview
 
-The app runs in [Google App Engine](https://cloud.google.com/appengine/),
-simply because it’s a system with which the author was familiar. The live app
-backend, implemented in `app/main.py`, is actually relatively simple, and just
-provides a small API for retrieving data about LIGO events and their
-localizations.
+The frontend of the website as seen by users is simple static content that’s
+stored in `frontend/`. It’s very quick to create a WWT control, and then
+there’s some custom JavaScript to download the LIGO event data and render them
+in the WWT framework. The frontend is served off of Google Cloud Storage.
 
-The website as seen by users is mostly simple static content, stored in
-`app/static/`. It’s very quick to create a WWT control, and then there’s some
-custom JavaScript to download the LIGO event data and render them in the WWT
-framework.
+The frontend makes API calls against a backend that provides programmatic
+access to a small database. The backend runs in
+[Google App Engine](https://cloud.google.com/appengine/), simply because it’s
+a system with which the author was familiar. The main implementation is in
+`backend/main.py`. It’s relatively simple, and just provides a small API for
+retrieving data about LIGO events and their localizations.
 
 The idea is that when LIGO is running, the app will show events as they occur.
 But in the meantime, we have to show something. The directory `bootstrap/` has

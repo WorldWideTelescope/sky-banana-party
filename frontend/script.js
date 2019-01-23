@@ -1,4 +1,6 @@
 (function() {
+    const backend_base = "http://sky-banana-party.appspot.com/api/";
+
     function size_content() {
         const new_width = ($("html").width()) + "px";
         $("#wwtcanvas").css("width", new_width);
@@ -18,6 +20,8 @@
         // `wwtlib.WWTControl.scriptInterface`.
         var wwt_si = wwtlib.WWTControl.initControlParam("wwtcanvas", true); // "true" => WebGL enabled
         wwt_si.add_ready(wwt_ready);
+
+        apply_config();
     }
 
     $(document).ready(initialize);
@@ -64,13 +68,14 @@
     //wwt.settings.set_solarSystemPlanets(true);
 
     function setup_bananas(wwt_ctl, wwt_si) {
-        const wsurl = new URL("api/events/workingset", window.location.href).href;
+        const wsurl = backend_base + "events/workingset";
+
         $.getJSON(wsurl, function(data) {
             var index = 0;
 
             for (const event_info of data) {
                 const key = event_info.ident;
-                const regurl = new URL("api/events/" + key + "/regions", window.location.href).href;
+                const regurl = backend_base + "events/" + key + "/regions";
                 event_info.index = index;
                 $.getJSON(regurl, function(regions) { setup_one_event(wwt_ctl, wwt_si, event_info, regions) });
                 index++;
@@ -123,6 +128,37 @@
 
             wwt_si.addAnnotation(poly);
         }
+    }
+
+    function apply_config() {
+        // Note: at the moment, this is called before the WWT control is
+        // necessarily set up; would be straightforward to restructure if we
+        // end up needing access to it.
+
+        $.getJSON("config.json").done(function(data) {
+            var ligo_status_html;
+            var seconds_until_start;
+
+            if (data.ligo_mode == "off") {
+                seconds_until_start = 0.001 * (data.ligo_turn_on_unix_ms - Date.now());
+
+                if (seconds_until_start < 1) {
+                    // The JSON must be stale ...
+                    data.ligo_mode = "on";
+                    // ... handle this more
+                }
+            }
+
+            if (data.ligo_mode == "off") {
+                ligo_status_html = "<a href=\"https://www.ligo.caltech.edu/\">LIGO</a> is currently <b>off</b>" +
+                    " — " + data.ligo_turn_on_html_frag + " will begin in " + wait_time_to_text(seconds_until_start) +
+                    "<br>Events from earlier observing runs are shown.";
+            } else {
+                ligo_status_html = "<a href=\"https://www.ligo.caltech.edu/\">LIGO</a>’s status is <b>unknown</b>";
+            }
+
+            $("#ligostatus").html(ligo_status_html);
+        });
     }
 
     function setup_controls(wwt_ctl, wwt_si) {
@@ -239,5 +275,21 @@
                     wwt_ctl.zoom(0.7);
             }
         })(true));
+    }
+
+    function wait_time_to_text(seconds) {
+        if (seconds > 5184000) { // 86400 * 30 * 2
+            const months = seconds / 2592000;
+            return months.toFixed(0) + " months";
+        } else if (seconds > 259200) { // 86400 * 3
+            const days = seconds / 86400;
+            return days.toFixed(0) + " days";
+        } else if (seconds > 7200) { // 2 hours
+            const hours = seconds / 3600;
+            return "about " + hours.toFixed(0) + " hours";
+        } else {
+            // With timezones, etc., I don't think we'll get more precise than this.
+            return "just a few hours!";
+        }
     }
 })();

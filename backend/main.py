@@ -7,7 +7,7 @@ from google.cloud import datastore
 import json
 import os
 
-from flask import Flask
+from flask import Flask, Response
 app = Flask(__name__)
 
 
@@ -100,7 +100,12 @@ def working_set():
     )
     # TODO: filter by recency
     results = list(q.fetch())
-    return json.dumps(results)
+
+    # We need to enable CORS since we're serving from appspot.com to skybanana.party.
+    resp = Response(json.dumps(results))
+    resp.headers['Content-Type'] = 'application/json'
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @app.route('/api/events/<string:ident>/regions')
@@ -115,7 +120,12 @@ def regions(ident):
     client = datastore.Client()
     key = client.key('event', ident)
     ent = client.get(key)
-    return ent['regionjson']
+
+    # We need to enable CORS since we're serving from appspot.com to skybanana.party.
+    resp = Response(ent['regionjson'])
+    resp.headers['Content-Type'] = 'application/json'
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 if __name__ == '__main__':
