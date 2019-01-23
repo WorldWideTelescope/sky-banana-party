@@ -4,7 +4,7 @@ A website that shows recent [LIGO](https://www.ligo.org/) events on the sky.
 It's got a silly name, but the hope is that it will show how to create a
 simple web app that uses
 [WorldWide Telescope](http://www.worldwidetelescope.org/) technology to power
-an nice, interactive all-sky visualization of astronomical data.
+a nice, interactive all-sky visualization of astronomical data.
 
 This project was started during the [AAS233](https://aas.org/meetings/aas233)
 Hack Together Day, but only the barest progress was made that day. Getting
@@ -20,13 +20,13 @@ provides a small API for retrieving data about LIGO events and their
 localizations.
 
 The website as seen by users is mostly simple static content, stored in
-`app/static.js`. It’s very quick to create a WWT control, and then there’s
-some custom JavaScript to download the LIGO event data and render it in the
-WWT framework.
+`app/static/`. It’s very quick to create a WWT control, and then there’s some
+custom JavaScript to download the LIGO event data and render them in the WWT
+framework.
 
 The idea is that when LIGO is running, the app will show events as they occur.
 But in the meantime, we have to show something. The directory `bootstrap/` has
-code to bootstram the event database with data from the LIGO
+code to bootstrap the event database with data from the LIGO
 [O1/O2 Catalog](https://www.ligo.org/detections/O1O2catalog.php).
 
 ## Legalities
