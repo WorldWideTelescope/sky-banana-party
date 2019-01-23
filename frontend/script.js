@@ -30,7 +30,6 @@
         var wwt_ctl = wwtlib.WWTControl.singleton;
         var wwt_si = wwtlib.WWTControl.scriptInterface;
 
-        wwt_si.loadImageCollection('https://WorldWideTelescope.github.io/pywwt/surveys.xml');
         wwt_si.setBackgroundImageByName('USNOB');
         wwt_si.settings.set_showConstellationBoundries(false);
         wwt_si.settings.set_showConstellationFigures(false);
