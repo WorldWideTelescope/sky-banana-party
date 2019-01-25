@@ -6,4 +6,4 @@
 
 cd "$(dirname $0)"
 set -x
-exec gsutil -m cp *.css *.html *.ico *.js *.json gs://skybanana.party/
+exec gsutil -m cp *.css *.html *.ico *.js *.json *.png gs://skybanana.party/
